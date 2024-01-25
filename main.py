@@ -1,5 +1,4 @@
 import os
-import webbrowser
 from tkinter import *
 from tkinter import filedialog, messagebox
 import menus
