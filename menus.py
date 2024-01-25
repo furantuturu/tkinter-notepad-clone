@@ -32,7 +32,7 @@ class Menus:
         editmenu.add_command(label="Paste", command=self.paste)
         editmenu.add_command(label="Delete", command=self.cut)
         editmenu.add_separator()
-        editmenu.add_command(label="Find...", command=quit)
+        editmenu.add_command(label="Find...", command=self.find)
         editmenu.add_command(label="Find Next", command=quit)
         editmenu.add_command(label="Find Previous", command=quit)
         editmenu.add_command(label="Replace...", command=quit)
@@ -76,6 +76,28 @@ class Menus:
     def paste(self):
         self.textarea.event_generate("<<Paste>>")
 
+    def find(self):
+        find_menu_window = Tk()
+        find_menu_window.title("Find")
+        find_menu_window.resizable(False, False)
+
+        Label(master=find_menu_window, text="Find what:").grid(row=0, column=0, pady=10)
+        Entry(master=find_menu_window, width=32).grid(row=0, column=1, columnspan=3)
+        
+        Button(master=find_menu_window, text="Find Next", width=9).grid(row=0, column=4, padx=5)
+        Button(master=find_menu_window, text="Cancel", width=9).grid(row=1, column=4)
+        
+        Label(master=find_menu_window, text="Direction").grid(row=1, column=2)
+
+        radio_btn_var = IntVar()
+        Radiobutton(master=find_menu_window, text="Up", variable=radio_btn_var, value=1).grid(row=2, column=2)        
+        Radiobutton(master=find_menu_window, text="Down", variable=radio_btn_var, value=2).grid(row=2, column=3)
+        
+        matchcase_var = IntVar()
+        wraparnd_var = IntVar()
+        Checkbutton(master=find_menu_window, text="Match case", variable=matchcase_var, onvalue=1, offvalue=2).grid(row=2, column=0)   
+        Checkbutton(master=find_menu_window, text="Wrap around", variable=wraparnd_var, onvalue=1, offvalue=2).grid(row=3, column=0)   
+    
     def select_all(self):
         self.textarea.event_generate("<<SelectAll>>")
     
