@@ -1,5 +1,9 @@
+import os
 import time
+import webbrowser
+import AppOpener
 from tkinter import *
+from tkinter import filedialog, messagebox
 
 class Menus:
     def __init__(self, window, textarea) -> None:
@@ -56,10 +60,10 @@ class Menus:
 
         helpmenu = Menu(master=self.menubar, tearoff=0)
         self.menubar.add_cascade(label="Help", menu=helpmenu)
-        helpmenu.add_command(label="View Help", command=quit)
-        helpmenu.add_command(label="Send Feedback", command=quit)
+        helpmenu.add_command(label="View Help", command=self.view_help)
+        helpmenu.add_command(label="Send Feedback", command=self.send_feedback)
         helpmenu.add_separator()
-        helpmenu.add_command(label="About Notepad", command=quit)
+        helpmenu.add_command(label="About Notepad", command=self.about)
         
         
     # Edit menu commands
@@ -104,3 +108,13 @@ class Menus:
     def time_date(self):
         current_time = time.strftime("%I:%M %p %d/%b/%Y")
         self.textarea.insert(END, current_time)
+    
+    # Help menu commands
+    def view_help(self):
+        webbrowser.open_new_tab("https://www.bing.com/search?q=get+help+with+notepad+in+windows&filters=guid:%224466414-en-dia%22%20lang:%22en%22&form=T00032&ocid=HelpPane-BingIA")
+    
+    def send_feedback(self):
+        AppOpener.open("feedback hub")
+    
+    def about(self):
+        messagebox.showinfo(title="About tk Notepad", message="This is an attempt to atleast clone notepad just for fun and test my coding skills in python and playing around in tkinter")
