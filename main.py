@@ -20,7 +20,14 @@ scrollbar = Scrollbar(master=window, orient=VERTICAL, command=textarea.yview)
 scrollbar.grid(row=0, column=1, sticky=NS)
 textarea.config(yscrollcommand=scrollbar.set)
 
-menutab = menus.Menus(window=window, textarea=textarea)
+status_bar_frame = Frame(master=window, height=24)
+Label(master=status_bar_frame, width=24).grid(row=1, column=0)
+Label(master=status_bar_frame, text="Ln 1, Col 1", relief=GROOVE, justify=LEFT, anchor=W).grid(row=1, column=1, ipadx=40)
+Label(master=status_bar_frame, text="100%", justify=LEFT, anchor=W).grid(row=1, column=2, ipadx=5)
+Label(master=status_bar_frame, text="Windows (CRLF)", relief=GROOVE, justify=LEFT, anchor=W).grid(row=1, column=3, ipadx=10)
+Label(master=status_bar_frame, text="UTF-8", justify=LEFT, anchor=W).grid(row=1, column=4, ipadx=30)
+
+menutab = menus.Menus(window=window, textarea=textarea, status_bar_frame=status_bar_frame)
 
 if __name__ == "__main__":
     window.mainloop()
