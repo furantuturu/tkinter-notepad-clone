@@ -6,11 +6,13 @@ from tkinter import *
 from tkinter import filedialog, messagebox
 
 class Menus:
-    def __init__(self, window, textarea) -> None:
+    def __init__(self, window, textarea, status_bar_frame) -> None:
         self.window = window
         self.textarea = textarea
+        self.status_bar_frame = status_bar_frame
+        self.status_bar_toggle = True
         self.menubar = Menu(master=window)
-
+        
         self.window.config(menu=self.menubar)
 
         filemenu = Menu(master=self.menubar, tearoff=0)
@@ -55,7 +57,7 @@ class Menus:
         viewmenu = Menu(master=self.menubar, tearoff=0)
         self.menubar.add_cascade(label="View", menu=viewmenu)
         viewmenu.add_command(label="Zoom", command=quit)
-        viewmenu.add_command(label="Status Bar", command=quit)
+        viewmenu.add_command(label="Status Bar", command=self.status_bar)
 
 
         helpmenu = Menu(master=self.menubar, tearoff=0)
@@ -64,8 +66,8 @@ class Menus:
         helpmenu.add_command(label="Send Feedback", command=self.send_feedback)
         helpmenu.add_separator()
         helpmenu.add_command(label="About Notepad", command=self.about)
-        
-        
+                
+        self.status_bar()
     # Edit menu commands
     def undo(self):
         # self.textarea.event_generate("<<Undo>>")
@@ -109,6 +111,19 @@ class Menus:
         current_time = time.strftime("%I:%M %p %d/%b/%Y")
         self.textarea.insert(END, current_time)
     
+    # View menu commands
+    def zoom(self):
+        pass
+    
+    def status_bar(self):
+        if self.status_bar_toggle:
+            self.status_bar_frame.grid(row=1, column=0, sticky=E)
+            self.status_bar_toggle = False
+
+        else:
+            self.status_bar_frame.grid_remove()
+            self.status_bar_toggle = True
+            
     # Help menu commands
     def view_help(self):
         webbrowser.open_new_tab("https://www.bing.com/search?q=get+help+with+notepad+in+windows&filters=guid:%224466414-en-dia%22%20lang:%22en%22&form=T00032&ocid=HelpPane-BingIA")
