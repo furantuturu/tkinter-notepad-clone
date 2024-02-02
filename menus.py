@@ -6,11 +6,13 @@ from tkinter import *
 from tkinter import filedialog, messagebox
 
 class Menus:
-    def __init__(self, window, textarea, status_bar_frame) -> None:
+    def __init__(self, window, textarea, status_bar_frame, scrollbar_x) -> None:
         self.window = window
         self.textarea = textarea
         self.status_bar_frame = status_bar_frame
+        self.scrollbar_x = scrollbar_x
         self.status_bar_toggle = True
+        self.word_wrap_toggle = True
         self.menubar = Menu(master=window)
         
         self.window.config(menu=self.menubar)
@@ -50,14 +52,14 @@ class Menus:
 
         formatmenu = Menu(master=self.menubar, tearoff=0)
         self.menubar.add_cascade(label="Format", menu=formatmenu)
-        formatmenu.add_command(label="Word Wrap", command=quit)
-        formatmenu.add_command(label="Font...", command=quit)
+        formatmenu.add_command(label="Toggle Word Wrap", command=self.word_wrap)
+        formatmenu.add_command(label="Font...", command=self.font)
 
 
         viewmenu = Menu(master=self.menubar, tearoff=0)
         self.menubar.add_cascade(label="View", menu=viewmenu)
-        viewmenu.add_command(label="Zoom", command=quit)
-        viewmenu.add_command(label="Status Bar", command=self.status_bar)
+        viewmenu.add_command(label="Zoom", command=self.zoom)
+        viewmenu.add_command(label="Toggle Status Bar", command=self.status_bar)
 
 
         helpmenu = Menu(master=self.menubar, tearoff=0)
@@ -67,7 +69,9 @@ class Menus:
         helpmenu.add_separator()
         helpmenu.add_command(label="About Notepad", command=self.about)
                 
+        self.word_wrap()
         self.status_bar()
+        
     # Edit menu commands
     def undo(self):
         # self.textarea.event_generate("<<Undo>>")
@@ -111,13 +115,28 @@ class Menus:
         current_time = time.strftime("%I:%M %p %d/%b/%Y")
         self.textarea.insert(END, current_time)
     
+    # Format menu commands
+    def word_wrap(self):
+        if self.word_wrap_toggle:
+            self.textarea.config(wrap=WORD)
+            self.scrollbar_x.grid_remove()
+            self.word_wrap_toggle = False
+
+        else:
+            self.textarea.config(wrap=NONE)
+            self.scrollbar_x.grid(row=1, column=0, sticky=EW)
+            self.word_wrap_toggle = True
+    
+    def font(self):
+        pass
+    
     # View menu commands
     def zoom(self):
         pass
-    
+
     def status_bar(self):
         if self.status_bar_toggle:
-            self.status_bar_frame.grid(row=1, column=0, sticky=E)
+            self.status_bar_frame.grid(row=2, column=0, sticky=E)
             self.status_bar_toggle = False
 
         else:
