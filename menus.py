@@ -4,6 +4,7 @@ import webbrowser
 import AppOpener
 from tkinter import *
 from tkinter import filedialog, messagebox
+import textareaframe
 
 class Menus:
     def __init__(self, window, textarea, status_bar_frame, scrollbar_x) -> None:
@@ -20,14 +21,14 @@ class Menus:
 
         filemenu = Menu(master=self.menubar, tearoff=0)
         self.menubar.add_cascade(label="File", menu=filemenu)
-        filemenu.add_command(label="New", command=quit)
-        filemenu.add_command(label="New Window", command=quit)
-        filemenu.add_command(label="Open...", command=quit)
-        filemenu.add_command(label="Save", command=quit)
-        filemenu.add_command(label="Save As...", command=quit)
+        filemenu.add_command(label="New", command=self.new)
+        filemenu.add_command(label="New Window", command=self.new_window)
+        filemenu.add_command(label="Open...", command=self.open_file)
+        filemenu.add_command(label="Save", command=self.save)
+        filemenu.add_command(label="Save As...", command=self.save_as)
         filemenu.add_separator()
-        filemenu.add_command(label="Page Setup...", command=quit)
-        filemenu.add_command(label="Print...", command=quit)
+        filemenu.add_command(label="Page Setup...", command=self.page_setup)
+        filemenu.add_command(label="Print...", command=self.print_content)
         filemenu.add_separator()
         filemenu.add_command(label="Exit", command=quit)
 
@@ -73,6 +74,67 @@ class Menus:
         self.word_wrap()
         self.status_bar()
         
+    # File menu commands
+    def new(self):
+        self.window.title("Untitled")
+        self.textarea.delete("1.0", END)
+    
+    def new_window(self):
+        window_new = Tk()
+        window_new_w = self.window.winfo_width()
+        window_new_h = self.window.winfo_height()
+        screen_new_w = self.window.winfo_screenwidth()
+        screen_new_h = self.window.winfo_screenheight()
+
+        x = int((screen_new_w / 2) - (window_new_w / 2))
+        y = int((screen_new_h / 2) - (window_new_h / 2))
+
+        window_new.title("Untitled")
+        window_new.geometry(f"{window_new_w}x{window_new_h}+{x}+{y}")
+        window_new.grid_rowconfigure(0, weight=1)
+        window_new.grid_columnconfigure(0, weight=1)
+        
+        window_new_textframe = textareaframe.TextFrame(window=window_new)
+        window_new_menutab = Menus(window=window_new, textarea=window_new_textframe.textarea, status_bar_frame=window_new_textframe.status_bar_frame, scrollbar_x=window_new_textframe.scrollbar_x)
+        
+    def open_file(self):
+        file = filedialog.askopenfilename(defaultextension=".txt", filetypes=[("Text Document", "*.txt"), ("All Files", "*.*")])
+
+        if file == '':
+            return
+
+        with open(file=file, mode="r") as f:
+            self.textarea.delete("1.0", END)
+            self.window.title(os.path.basename(file))
+            self.textarea.insert("1.0", f.read())
+    
+    def save(self):
+        if self.window.title() == "Untitled":
+            self.save_as()
+        else:
+            file_path = self.window.title().strip()
+            
+            data = self.textarea.get("1.0", END)
+            with open(file=file_path, mode="w") as f:
+                f.write(data)
+                
+    def save_as(self):
+        file = filedialog.asksaveasfilename(initialfile="*.txt", defaultextension=".txt", filetypes=[("Text Document", "*.txt"), ("All Files", "*.*")])
+        
+        if file == '':
+            return
+        
+        data = self.textarea.get("1.0", END)
+        with open(file=file, mode="w") as f:
+            f.write(data)
+            self.window.title(os.path.basename(file))
+
+    def page_setup(self):
+        pass
+    
+    def print_content(self):
+        pass
+
     # Edit menu commands
     def undo(self):
         # self.textarea.event_generate("<<Undo>>")
