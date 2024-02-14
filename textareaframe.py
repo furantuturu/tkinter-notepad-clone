@@ -1,9 +1,10 @@
 from tkinter import *
 
 class TextFrame:
-    def __init__(self, window) -> None:
+    def __init__(self, window, default_font) -> None:
         self.window = window
-        self.textarea = Text(master=self.window, undo=True, height=self.window.winfo_screenheight(), font=('Arial', 16))
+        self.default_font = default_font
+        self.textarea = Text(master=self.window, undo=True, height=self.window.winfo_screenheight(), font=self.default_font)
         self.scrollbar_y = Scrollbar(master=self.window, orient=VERTICAL, command=self.textarea.yview)
         self.scrollbar_x = Scrollbar(master=self.window, orient=HORIZONTAL, command=self.textarea.xview)
         self.status_bar_frame = Frame(master=self.window, height=24)
