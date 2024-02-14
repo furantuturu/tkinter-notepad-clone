@@ -3,17 +3,18 @@ import time
 import webbrowser
 import AppOpener
 from tkinter import *
-from tkinter import filedialog, messagebox
+from tkinter import filedialog, messagebox, font
 import textareaframe
 
 class Menus:
-    def __init__(self, window, textarea, status_bar_frame, scrollbar_x) -> None:
+    def __init__(self, window, textarea , font, status_bar_frame, scrollbar_x) -> None:
         self.window = window
         self.textarea = textarea
+        self.font = font
         self.status_bar_frame = status_bar_frame
         self.scrollbar_x = scrollbar_x
-        self.status_bar_toggle = True
-        self.word_wrap_toggle = True
+        self.status_bar_toggle = BooleanVar()
+        self.word_wrap_toggle = BooleanVar()
         self.current_find_menu_window = None
         self.menubar = Menu(master=window)
         
@@ -54,14 +55,20 @@ class Menus:
 
         formatmenu = Menu(master=self.menubar, tearoff=0)
         self.menubar.add_cascade(label="Format", menu=formatmenu)
-        formatmenu.add_command(label="Toggle Word Wrap", command=self.word_wrap)
+        formatmenu.add_checkbutton(label="Toggle Word Wrap", variable=self.word_wrap_toggle, command=self.word_wrap)
         formatmenu.add_command(label="Font...", command=self.font)
 
 
         viewmenu = Menu(master=self.menubar, tearoff=0)
         self.menubar.add_cascade(label="View", menu=viewmenu)
-        viewmenu.add_command(label="Zoom", command=self.zoom)
-        viewmenu.add_command(label="Toggle Status Bar", command=self.status_bar)
+        
+        zoom_submenu = Menu(master=viewmenu, tearoff=0)
+        viewmenu.add_cascade(label="Zoom", menu=zoom_submenu)
+        zoom_submenu.add_command(label="Zoom In", command=self.zoom_in)
+        zoom_submenu.add_command(label="Zoom Out", command=self.zoom_out)
+        zoom_submenu.add_command(label="Restore Default Zoom", command=self.default_zoom)
+        
+        viewmenu.add_checkbutton(label="Toggle Status Bar", variable=self.status_bar_toggle, command=self.status_bar)
 
 
         helpmenu = Menu(master=self.menubar, tearoff=0)
@@ -70,8 +77,10 @@ class Menus:
         helpmenu.add_command(label="Send Feedback", command=self.send_feedback)
         helpmenu.add_separator()
         helpmenu.add_command(label="About Notepad", command=self.about)
-                
+
+        self.word_wrap_toggle.set(True)
         self.word_wrap()
+        self.status_bar_toggle.set(True)
         self.status_bar()
         
     # File menu commands
@@ -86,16 +95,18 @@ class Menus:
         screen_new_w = self.window.winfo_screenwidth()
         screen_new_h = self.window.winfo_screenheight()
 
-        x = int((screen_new_w / 2) - (window_new_w / 2))
-        y = int((screen_new_h / 2) - (window_new_h / 2))
+        x = int((screen_new_w / 2) - (window_new_w / 2)) + 75
+        y = int((screen_new_h / 2) - (window_new_h / 2)) + 75
 
         window_new.title("Untitled")
         window_new.geometry(f"{window_new_w}x{window_new_h}+{x}+{y}")
         window_new.grid_rowconfigure(0, weight=1)
         window_new.grid_columnconfigure(0, weight=1)
         
-        window_new_textframe = textareaframe.TextFrame(window=window_new)
-        window_new_menutab = Menus(window=window_new, textarea=window_new_textframe.textarea, status_bar_frame=window_new_textframe.status_bar_frame, scrollbar_x=window_new_textframe.scrollbar_x)
+        window_new_font = font.Font(family='Arial', size=16)
+        
+        window_new_textframe = textareaframe.TextFrame(window=window_new, default_font=window_new_font)
+        window_new_menutab = Menus(window=window_new, textarea=window_new_textframe.textarea, font=window_new_font, status_bar_frame=window_new_textframe.status_bar_frame, scrollbar_x=window_new_textframe.scrollbar_x)
         
     def open_file(self):
         file = filedialog.askopenfilename(defaultextension=".txt", filetypes=[("Text Document", "*.txt"), ("All Files", "*.*")])
@@ -185,31 +196,34 @@ class Menus:
     
     # Format menu commands
     def word_wrap(self):
-        if self.word_wrap_toggle:
+        if self.word_wrap_toggle.get():
             self.textarea.config(wrap=WORD)
             self.scrollbar_x.grid_remove()
-            self.word_wrap_toggle = False
 
         else:
             self.textarea.config(wrap=NONE)
             self.scrollbar_x.grid(row=1, column=0, sticky=EW)
-            self.word_wrap_toggle = True
     
     def font(self):
         pass
     
     # View menu commands
-    def zoom(self):
-        pass
-
+    # Zoom submenu commands 
+    def zoom_in(self):
+        self.font['size'] += 2
+        
+    def zoom_out(self):
+        self.font['size'] -= 2
+    
+    def default_zoom(self):
+        self.font['size'] = 16
+    
     def status_bar(self):
-        if self.status_bar_toggle:
+        if self.status_bar_toggle.get():
             self.status_bar_frame.grid(row=2, column=0, sticky=E)
-            self.status_bar_toggle = False
 
         else:
             self.status_bar_frame.grid_remove()
-            self.status_bar_toggle = True
             
     # Help menu commands
     def view_help(self):
