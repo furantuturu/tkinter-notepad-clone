@@ -73,7 +73,7 @@ class UI:
         formatmenu = Menu(master=self.menubar, tearoff=0)
         self.menubar.add_cascade(label="Format", menu=formatmenu)
         formatmenu.add_checkbutton(label="Toggle Word Wrap", variable=self.word_wrap_toggle, command=self.word_wrap)
-        formatmenu.add_command(label="Font...", command=self.font)
+        formatmenu.add_command(label="Font...", command=self.change_font)
 
 
         viewmenu = Menu(master=self.menubar, tearoff=0)
@@ -106,8 +106,21 @@ class UI:
         self.textarea.delete("1.0", END)
     
     def new_window(self):
-        fresh_window = Toplevel()
-        widgets = self.window.winfo_children()
+        fresh_window = Tk()
+        fresh_window_w = 727
+        fresh_window_h = 500
+        fresh_screen_w = self.window.winfo_screenwidth()
+        fresh_screen_h = self.window.winfo_screenheight()
+        
+        x = int((fresh_screen_w / 2) - (fresh_window_w / 2)) + 75
+        y = int((fresh_screen_h / 2) - (fresh_window_h / 2)) + 75
+        
+        fresh_window.title("Untitled")
+        fresh_window.geometry(f"{fresh_window_w}x{fresh_window_h}+{x}+{y}")
+        fresh_window.grid_rowconfigure(0, weight=1)
+        fresh_window.grid_columnconfigure(0, weight=1)
+        
+        UI(window=fresh_window)
         
     def open_file(self):
         file = filedialog.askopenfilename(defaultextension=".txt", filetypes=[("Text Document", "*.txt"), ("All Files", "*.*")])
@@ -205,7 +218,7 @@ class UI:
             self.textarea.config(wrap=NONE)
             self.scrollbar_x.grid(row=1, column=0, sticky=EW)
     
-    def font(self):
+    def change_font(self):
         pass
     
     # View menu commands
