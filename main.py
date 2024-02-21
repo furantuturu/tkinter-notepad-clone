@@ -16,5 +16,6 @@ window.grid_rowconfigure(0, weight=1)
 window.grid_columnconfigure(0, weight=1)
 
 if __name__ == "__main__":
-    menutab = notepadUI.UI(window=window)
+    notepadUI.UI(window=window)
     window.mainloop()
+    
