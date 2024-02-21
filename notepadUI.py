@@ -4,19 +4,36 @@ import webbrowser
 import AppOpener
 from tkinter import *
 from tkinter import filedialog, messagebox, font
-import textareaframe
 
-class Menus:
-    def __init__(self, window, textarea , font, status_bar_frame, scrollbar_x) -> None:
+class UI:
+    def __init__(self, window) -> None:
         self.window = window
-        self.textarea = textarea
-        self.font = font
-        self.status_bar_frame = status_bar_frame
-        self.scrollbar_x = scrollbar_x
         self.status_bar_toggle = BooleanVar()
         self.word_wrap_toggle = BooleanVar()
         self.current_find_menu_window = None
         self.menubar = Menu(master=window)
+        
+        # ************************* TEXTAREA ***********************************************************
+        self.font = font.Font(family="Arial", size=16)
+
+        self.textarea = Text(master=self.window, undo=True, height=self.window.winfo_screenheight(), font=self.font)
+        self.scrollbar_y = Scrollbar(master=self.window, orient=VERTICAL, command=self.textarea.yview)
+        self.scrollbar_x = Scrollbar(master=self.window, orient=HORIZONTAL, command=self.textarea.xview)
+        self.status_bar_frame = Frame(master=self.window, height=24)
+
+        self.textarea.grid(row=0, column=0, sticky=EW)
+        self.scrollbar_y.grid(row=0, column=1, sticky=NS)
+
+        self.textarea.config(xscrollcommand=self.scrollbar_x.set, yscrollcommand=self.scrollbar_y.set)
+        # *********************************************************************************************
+
+        # ************************* MENUS ***********************************************************
+        Label(master=self.status_bar_frame, width=24).grid(row=2, column=0)
+        Label(master=self.status_bar_frame, text="Ln 1, Col 1", relief=GROOVE, justify=LEFT, anchor=W).grid(row=2, column=1, ipadx=40)
+        Label(master=self.status_bar_frame, text="100%", justify=LEFT, anchor=W).grid(row=2, column=2, ipadx=5)
+        Label(master=self.status_bar_frame, text="Windows (CRLF)", relief=GROOVE, justify=LEFT, anchor=W).grid(row=2, column=3, ipadx=10)
+        Label(master=self.status_bar_frame, text="UTF-8", justify=LEFT, anchor=W).grid(row=2, column=4, ipadx=30)
+        
         
         self.window.config(menu=self.menubar)
 
@@ -89,24 +106,8 @@ class Menus:
         self.textarea.delete("1.0", END)
     
     def new_window(self):
-        window_new = Tk()
-        window_new_w = self.window.winfo_width()
-        window_new_h = self.window.winfo_height()
-        screen_new_w = self.window.winfo_screenwidth()
-        screen_new_h = self.window.winfo_screenheight()
-
-        x = int((screen_new_w / 2) - (window_new_w / 2)) + 75
-        y = int((screen_new_h / 2) - (window_new_h / 2)) + 75
-
-        window_new.title("Untitled")
-        window_new.geometry(f"{window_new_w}x{window_new_h}+{x}+{y}")
-        window_new.grid_rowconfigure(0, weight=1)
-        window_new.grid_columnconfigure(0, weight=1)
-        
-        window_new_font = font.Font(family='Arial', size=16)
-        
-        window_new_textframe = textareaframe.TextFrame(window=window_new, default_font=window_new_font)
-        window_new_menutab = Menus(window=window_new, textarea=window_new_textframe.textarea, font=window_new_font, status_bar_frame=window_new_textframe.status_bar_frame, scrollbar_x=window_new_textframe.scrollbar_x)
+        fresh_window = Toplevel()
+        widgets = self.window.winfo_children()
         
     def open_file(self):
         file = filedialog.askopenfilename(defaultextension=".txt", filetypes=[("Text Document", "*.txt"), ("All Files", "*.*")])
